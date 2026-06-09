@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Bond Ladder Pro — Инвестиционная стратегия</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#f0f2f7;--s1:#fff;--s2:#f5f7fb;--s3:#edf0f7;
+  --b1:#dde2ee;--b2:#c8cedf;--b3:#a8b0c8;
+  --t1:#1a1f2e;--t2:#4a5268;--t3:#8590a8;
+  --gold:#c97c00;--gold2:#e8960a;--goldbg:#fff8e6;
+  --green:#0a7c52;--greenbg:#e6f7f1;
+  --red:#c0392b;--redbg:#fdecea;
+  --blue:#1a5cbf;--bluebg:#e8f0fc;
+  --purple:#6b3fbf;--purplebg:#f0ebfc;
+  --teal:#0891b2;--tealbg:#e0f4f9;
+  --r:12px;--rs:7px;
+  --shadow:0 1px 4px rgba(0,0,0,.07),0 4px 16px rgba(0,0,0,.06);
+  --shadow-sm:0 1px 3px rgba(0,0,0,.08);
+}
+html,body{min-height:100%;background:var(--bg);color:var(--t1);font-family:'Manrope',sans-serif;font-size:14px;overflow-x:hidden;}
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px;}
+
+/* ── HEADER ── */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:13px 28px;background:var(--s1);border-bottom:1px solid var(--b1);position:sticky;top:0;z-index:200;box-shadow:var(--shadow-sm);}
+.hdr-logo{display:flex;align-items:center;gap:10px;}
+.hdr-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--gold2),var(--gold));border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:13px;color:#fff;box-shadow:0 2px 8px rgba(200,120,0,.3);}
+.hdr-title{font-size:17px;font-weight:800;letter-spacing:-.3px;}
+.hdr-sub{font-size:10px;color:var(--t3);letter-spacing:.8px;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;}
+.hdr-right{display:flex;align-items:center;gap:8px;}
+.hdr-badge{background:var(--s2);border:1px solid var(--b1);padding:4px 10px;border-radius:20px;font-size:11px;color:var(--t2);font-family:'IBM Plex Mono',monospace;}
+.hdr-badge em{color:var(--green);font-style:normal;}
+
+/* ── LAYOUT ── */
+.wrap{padding:20px 28px;display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:860px){.wrap{grid-template-columns:1fr;padding:14px;}}
+.full{grid-column:1/-1;}
+
+/* ── PANEL ── */
+.panel{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:20px;box-shadow:var(--shadow);}
+.panel-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.panel-title{font-size:14px;font-weight:700;}
+.panel-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;font-family:'IBM Plex Mono',monospace;letter-spacing:.4px;}
+.btn-reset{background:none;border:none;color:var(--t3);font-size:12px;cursor:pointer;font-family:'Manrope',sans-serif;display:flex;align-items:center;gap:4px;transition:color .2s;font-weight:600;}
+.btn-reset:hover{color:var(--red);}
+
+/* ── FORM ── */
+.frow{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px;}
+.fg{flex:1;min-width:110px;}
+.flabel{font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--t3);font-family:'IBM Plex Mono',monospace;margin-bottom:5px;font-weight:500;}
+.sw{position:relative;}
+.sw::after{content:'▾';position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--t3);pointer-events:none;font-size:11px;}
+select.fi,input.fi{width:100%;background:var(--s2);border:1.5px solid var(--b1);border-radius:var(--rs);color:var(--t1);padding:9px 12px;font-size:13px;font-family:'Manrope',sans-serif;outline:none;transition:border-color .2s,box-shadow .2s;appearance:none;-webkit-appearance:none;font-weight:500;}
+select.fi:focus,input.fi:focus{border-color:var(--gold2);box-shadow:0 0 0 3px rgba(232,150,10,.12);}
+
+/* ── CHECKBOXES / RADIO ── */
+.cbg{display:flex;gap:8px;flex-wrap:wrap;}
+.cbi{display:flex;align-items:center;gap:6px;cursor:pointer;}
+.cbi input[type=checkbox]{display:none;}
+.cbb{width:17px;height:17px;border-radius:4px;border:1.5px solid var(--b2);background:var(--s1);display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;transition:all .15s;flex-shrink:0;}
+.cbi input:checked+.cbb{background:var(--gold2);border-color:var(--gold2);}
+.cblabel{font-size:13px;color:var(--t2);font-weight:600;}
+.rg{display:flex;gap:8px;flex-wrap:wrap;}
+.ri{display:flex;align-items:center;gap:6px;cursor:pointer;}
+.ri input[type=radio]{display:none;}
+.rd{width:17px;height:17px;border-radius:50%;border:1.5px solid var(--b2);background:var(--s1);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.rd::after{content:'';width:7px;height:7px;border-radius:50%;background:transparent;transition:background .15s;}
+.ri input:checked~.rd{border-color:var(--gold2);}
+.ri input:checked~.rd::after{background:var(--gold2);}
+.ri span.rl{font-size:13px;color:var(--t2);font-weight:600;}
+
+/* ── SLIDERS ── */
+.slrow{display:flex;align-items:center;gap:8px;margin-top:4px;}
+input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:4px;background:var(--b1);border-radius:2px;outline:none;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--gold2);cursor:pointer;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+.slval{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--gold);min-width:34px;text-align:right;font-weight:600;}
+
+/* ── ALLOCATION SLIDER ── */
+.alloc-wrap{position:relative;height:12px;background:var(--b1);border-radius:6px;margin:10px 0;}
+.alloc-bonds{position:absolute;left:0;top:0;height:100%;border-radius:6px 0 0 6px;background:linear-gradient(90deg,var(--blue),#4a90e2);}
+.alloc-stocks{position:absolute;right:0;top:0;height:100%;border-radius:0 6px 6px 0;background:linear-gradient(90deg,#f5864a,var(--red));}
+.alloc-labels{display:flex;justify-content:space-between;margin-top:8px;font-size:12px;font-weight:700;}
+.alloc-bonds-lbl{color:var(--blue);}
+.alloc-stocks-lbl{color:var(--red);}
+
+/* ── TAGS ── */
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 14px;}
+.tag{background:var(--s2);border:1px solid var(--b1);border-radius:20px;padding:4px 11px;font-size:11px;color:var(--t2);font-family:'IBM Plex Mono',monospace;font-weight:500;}
+.tag.on{background:var(--goldbg);border-color:var(--gold2);color:var(--gold);}
+
+/* ── MORE FILTERS ── */
+.mftoggle{background:none;border:none;color:var(--t3);font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px;padding:5px 0;font-family:'Manrope',sans-serif;transition:color .2s;font-weight:600;}
+.mftoggle:hover{color:var(--gold);}
+.mf{display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--b1);}
+.mf.open{display:block;}
+
+/* ── BUTTONS ── */
+.btn{width:100%;padding:12px;border:none;border-radius:var(--rs);cursor:pointer;font-family:'Manrope',sans-serif;font-size:13px;font-weight:700;transition:all .2s;}
+.btn-gold{background:linear-gradient(135deg,var(--gold2),var(--gold));color:#fff;box-shadow:0 2px 8px rgba(200,120,0,.22);}
+.btn-gold:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(200,120,0,.32);}
+.btn-outline{background:var(--s2);border:1.5px solid var(--b1);color:var(--t2);}
+.btn-outline:hover{border-color:var(--gold2);color:var(--gold);background:var(--goldbg);}
+.btn-blue{background:linear-gradient(135deg,#2563eb,var(--blue));color:#fff;}
+.btn-blue:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(26,92,191,.3);}
+.btn-sm{padding:7px 14px;width:auto;font-size:12px;}
+
+/* ── TOOLBAR ── */
+.toolbar{display:flex;align-items:center;justify-content:space-between;background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:12px 18px;gap:10px;flex-wrap:wrap;box-shadow:var(--shadow-sm);}
+.tbr-l,.tbr-r{display:flex;align-items:center;gap:8px;}
+.tbtn{display:flex;align-items:center;gap:6px;padding:7px 13px;background:var(--s2);border:1.5px solid var(--b1);border-radius:var(--rs);color:var(--t2);cursor:pointer;font-size:12px;font-family:'Manrope',sans-serif;transition:all .2s;font-weight:600;}
+.tbtn:hover{border-color:var(--gold2);color:var(--gold);background:var(--goldbg);}
+.tbr-info{font-size:12px;color:var(--t3);font-family:'IBM Plex Mono',monospace;}
+
+/* ── TABS ── */
+.tabs-nav{display:flex;background:var(--s1);border:1px solid var(--b1);border-bottom:none;border-radius:var(--r) var(--r) 0 0;overflow-x:auto;}
+.tab-btn{padding:12px 18px;background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;color:var(--t3);font-size:12px;font-weight:700;font-family:'Manrope',sans-serif;white-space:nowrap;margin-bottom:-1px;transition:all .2s;}
+.tab-btn:hover{color:var(--t2);background:var(--s2);}
+.tab-btn.on{color:var(--gold);border-bottom-color:var(--gold2);}
+.tab-content{display:none;background:var(--s1);border:1px solid var(--b1);border-top:none;border-radius:0 0 var(--r) var(--r);min-height:280px;box-shadow:var(--shadow);}
+.tab-content.on{display:block;}
+
+/* ── STATS BAR ── */
+.stats-bar{display:flex;border-bottom:1px solid var(--b1);flex-wrap:wrap;}
+.stat{flex:1;min-width:110px;padding:16px;border-right:1px solid var(--b1);}
+.stat:last-child{border-right:none;}
+.stat-l{font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:var(--t3);font-family:'IBM Plex Mono',monospace;margin-bottom:5px;}
+.stat-v{font-size:20px;font-weight:800;color:var(--t1);}
+.stat-s{font-size:10px;color:var(--t3);margin-top:2px;}
+
+/* ── LADDER TABLE ── */
+.lpad{padding:16px;}
+.step-grp{margin-bottom:20px;}
+.step-hdr{display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:var(--rs);margin-bottom:6px;}
+.step-num{width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;}
+.step-lbl{font-size:13px;font-weight:800;}
+.step-date{font-family:'IBM Plex Mono',monospace;font-size:11px;background:rgba(0,0,0,.06);border-radius:20px;padding:2px 9px;color:var(--t2);}
+.no-bonds{padding:12px 14px;color:var(--t3);font-size:12px;background:var(--s2);border-radius:var(--rs);}
+.bt{width:100%;border-collapse:collapse;}
+.bt th{padding:8px 12px;text-align:left;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--t3);font-family:'IBM Plex Mono',monospace;border-bottom:1.5px solid var(--b1);background:var(--s2);}
+.bt td{padding:10px 12px;border-bottom:1px solid var(--b1);vertical-align:middle;}
+.bt tr:last-child td{border-bottom:none;}
+.bt tbody tr:hover td{background:var(--s2);}
+.bname{font-weight:700;font-size:12px;color:var(--t1);}
+.bisin{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--t3);margin-top:2px;}
+.bdate{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--t2);}
+.bev{font-size:9px;color:var(--t3);margin-top:1px;}
+.byield{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:700;color:var(--green);}
+.pill{display:inline-flex;align-items:center;padding:2px 8px;border-radius:5px;font-size:11px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.r-AAA{background:var(--greenbg);color:var(--green);}
+.r-AA{background:var(--bluebg);color:var(--blue);}
+.r-A{background:var(--purplebg);color:var(--purple);}
+.r-BBB{background:var(--goldbg);color:var(--gold);}
+.r-BB{background:var(--redbg);color:var(--red);}
+.share{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:700;color:var(--gold);}
+
+/* ── CASHFLOW ── */
+.cfpad{padding:18px;}
+.cf-ctrl{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+.tg{display:flex;border:1.5px solid var(--b1);border-radius:var(--rs);overflow:hidden;background:var(--s2);}
+.tgb{padding:6px 13px;background:none;border:none;cursor:pointer;font-size:12px;color:var(--t3);font-family:'Manrope',sans-serif;transition:all .2s;font-weight:600;}
+.tgb.on{background:var(--gold2);color:#fff;font-weight:700;}
+.sw-row{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--t2);font-weight:600;}
+.toggle{position:relative;display:inline-block;width:36px;height:20px;}
+.toggle input{display:none;}
+.tslider{position:absolute;inset:0;background:var(--b2);border-radius:10px;cursor:pointer;transition:.3s;}
+.tslider::after{content:'';position:absolute;left:2px;top:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.3s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.toggle input:checked+.tslider{background:var(--gold2);}
+.toggle input:checked+.tslider::after{transform:translateX(16px);}
+.chart-area{overflow-x:auto;background:var(--s2);border-radius:var(--rs);padding:12px;}
+.bar-chart{display:flex;align-items:flex-end;gap:5px;min-width:500px;height:185px;padding:0 4px;}
+.bg{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;min-width:46px;}
+.bstack{display:flex;flex-direction:column;justify-content:flex-end;width:100%;height:168px;gap:1px;}
+.bseg{width:100%;min-height:2px;border-radius:2px 2px 0 0;cursor:pointer;}
+.bseg:hover{opacity:.72;}
+.bseg.cp{background:var(--blue);}
+.bseg.mt{background:var(--green);}
+.blbl{font-size:9px;color:var(--t3);font-family:'IBM Plex Mono',monospace;text-align:center;}
+.legend{display:flex;gap:14px;margin-top:10px;}
+.lgi{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--t2);font-weight:600;}
+.lgd{width:12px;height:12px;border-radius:3px;}
+
+/* ── CALENDAR ── */
+.calpad{padding:18px;}
+.cal-ctrl{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:13px;}
+.ybtn,.typbtn{padding:4px 11px;border-radius:20px;font-size:11px;background:var(--s2);border:1.5px solid var(--b1);color:var(--t2);cursor:pointer;font-family:'Manrope',sans-serif;transition:all .2s;font-weight:600;}
+.ybtn.on,.typbtn.on{background:var(--goldbg);border-color:var(--gold2);color:var(--gold);}
+.cal-tbl{width:100%;border-collapse:collapse;}
+.cal-tbl th{padding:8px 12px;text-align:left;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--t3);font-family:'IBM Plex Mono',monospace;border-bottom:1.5px solid var(--b1);background:var(--s2);}
+.cal-tbl td{padding:9px 12px;border-bottom:1px solid var(--b1);font-size:12px;font-family:'IBM Plex Mono',monospace;color:var(--t1);font-weight:500;}
+.cal-tbl tr:last-child td{border-bottom:none;}
+.cal-tbl tr:hover td{background:var(--s2);}
+.ev{display:inline-flex;padding:2px 7px;border-radius:4px;font-size:9px;font-weight:700;letter-spacing:.4px;}
+.ev-C{background:var(--bluebg);color:var(--blue);}
+.ev-M{background:var(--greenbg);color:var(--green);}
+.ev-P{background:var(--goldbg);color:var(--gold);}
+
+/* ── PARAMS ── */
+.ppad{padding:18px;display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:600px){.ppad{grid-template-columns:1fr;}}
+.pc{background:var(--s2);border:1px solid var(--b1);border-radius:var(--rs);padding:14px;}
+.pc-title{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--t3);font-family:'IBM Plex Mono',monospace;margin-bottom:10px;font-weight:600;}
+.pr{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--b1);}
+.pr:last-child{border-bottom:none;}
+.pk{color:var(--t2);font-size:13px;}
+.pv{font-weight:700;font-family:'IBM Plex Mono',monospace;font-size:12px;}
+
+/* ── MARKET MAP ── */
+.mpad{padding:18px;}
+.bubble-area{position:relative;width:100%;height:360px;background:var(--s2);border:1.5px solid var(--b1);border-radius:var(--r);overflow:hidden;}
+.ax-x{position:absolute;bottom:28px;left:52px;right:14px;height:1px;background:var(--b2);}
+.ax-y{position:absolute;left:52px;top:14px;bottom:28px;width:1px;background:var(--b2);}
+.ax-xl{position:absolute;bottom:8px;right:14px;font-size:9px;color:var(--t3);font-family:'IBM Plex Mono',monospace;}
+.ax-yl{position:absolute;top:14px;left:4px;font-size:9px;color:var(--t3);font-family:'IBM Plex Mono',monospace;writing-mode:vertical-rl;transform:rotate(180deg);}
+.bbl{position:absolute;border-radius:50%;transform:translate(-50%,-50%);cursor:pointer;transition:all .3s;border:2px solid rgba(255,255,255,.8);box-shadow:0 2px 8px rgba(0,0,0,.12);}
+.bbl:hover{transform:translate(-50%,-50%) scale(1.2);z-index:10;}
+.bbl-tip{position:absolute;bottom:115%;left:50%;transform:translateX(-50%);background:var(--s1);border:1px solid var(--b1);border-radius:var(--rs);padding:9px 12px;font-size:11px;white-space:nowrap;pointer-events:none;display:none;z-index:20;box-shadow:var(--shadow);}
+.bbl:hover .bbl-tip{display:block;}
+
+/* ── SCENARIOS ── */
+.scpad{padding:18px;}
+.sc-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+@media(max-width:600px){.sc-cards{grid-template-columns:1fr;}}
+.sc-card{background:var(--s2);border:1.5px solid var(--b1);border-radius:var(--r);padding:16px;cursor:pointer;transition:all .2s;}
+.sc-card:hover{border-color:var(--gold2);}
+.sc-card.on{border-color:var(--gold2);background:var(--goldbg);}
+.sc-icon{font-size:26px;margin-bottom:8px;}
+.sc-title{font-size:13px;font-weight:800;margin-bottom:3px;}
+.sc-desc{font-size:11px;color:var(--t3);}
+.sc-num{font-family:'IBM Plex Mono',monospace;font-size:17px;font-weight:700;margin-top:10px;}
+.pos{color:var(--green);}.neg{color:var(--red);}
+
+/* ── STOCKS TAB ── */
+.stocks-wrap{padding:20px;}
+.stocks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-bottom:24px;}
+.stock-card{background:var(--s1);border:1.5px solid var(--b1);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow-sm);transition:box-shadow .2s;}
+.stock-card:hover{box-shadow:var(--shadow);}
+.sc-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--b1);}
+.sc-ticker{font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:700;}
+.sc-company{font-size:12px;color:var(--t2);font-weight:600;margin-top:1px;}
+.sc-price-block{text-align:right;}
+.sc-price{font-size:18px;font-weight:800;font-family:'IBM Plex Mono',monospace;}
+.sc-change{font-size:11px;font-family:'IBM Plex Mono',monospace;font-weight:600;margin-top:2px;}
+.sc-change.up{color:var(--green);}
+.sc-change.dn{color:var(--red);}
+.sc-chart-area{padding:12px 16px;background:var(--s2);}
+.sc-canvas{width:100%;height:120px;display:block;}
+.sc-meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:12px 16px;}
+.sc-meta-item{text-align:center;}
+.sc-meta-label{font-size:9px;letter-spacing:.7px;text-transform:uppercase;color:var(--t3);font-family:'IBM Plex Mono',monospace;margin-bottom:3px;}
+.sc-meta-val{font-size:12px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.sc-reinvest{padding:10px 16px;background:var(--goldbg);border-top:1px solid var(--b1);font-size:11px;color:var(--gold);font-weight:600;display:flex;align-items:center;gap:6px;}
+.sc-reinvest.alert-sell{background:var(--redbg);color:var(--red);}
+.sc-reinvest.alert-buy{background:var(--greenbg);color:var(--green);}
+
+/* ── ALLOCATION PANEL ── */
+.alloc-panel{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:20px;box-shadow:var(--shadow);}
+.alloc-title{font-size:14px;font-weight:700;margin-bottom:16px;}
+.dual-slider-wrap{margin:8px 0 14px;}
+.dual-bar{height:10px;border-radius:5px;display:flex;overflow:hidden;cursor:pointer;position:relative;}
+.dual-bonds{height:100%;background:linear-gradient(90deg,var(--blue),#4a90e2);transition:width .3s;}
+.dual-stocks{height:100%;background:linear-gradient(90deg,#f5864a,var(--red));transition:width .3s;flex:1;}
+.dual-labels{display:flex;justify-content:space-between;font-size:12px;font-weight:700;margin-top:6px;}
+.dual-bonds-lbl{color:var(--blue);}
+.dual-stocks-lbl{color:var(--red);}
+.alloc-table{width:100%;border-collapse:collapse;margin-top:12px;}
+.alloc-table th{padding:7px 10px;font-size:9px;letter-spacing:.8px;text-transform:uppercase;color:var(--t3);font-family:'IBM Plex Mono',monospace;border-bottom:1.5px solid var(--b1);text-align:left;}
+.alloc-table td{padding:9px 10px;border-bottom:1px solid var(--b1);font-size:12px;vertical-align:top;}
+.alloc-table tr:last-child td{border-bottom:none;}
+.alloc-item-name{font-weight:700;color:var(--t1);}
+.alloc-item-sub{font-size:10px;color:var(--t3);margin-top:2px;}
+.alloc-amt{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:13px;}
+.alloc-lots{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--t2);margin-top:2px;}
+.alloc-badge-b{background:var(--bluebg);color:var(--blue);padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+.alloc-badge-s{background:var(--redbg);color:var(--red);padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;font-family:'IBM Plex Mono',monospace;}
+
+/* ── REINVEST PANEL ── */
+.reinvest-box{background:var(--goldbg);border:1.5px solid var(--gold2);border-radius:var(--r);padding:18px;margin-top:20px;}
+.reinvest-title{font-size:13px;font-weight:800;color:var(--gold);margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+.reinvest-rules{display:flex;flex-direction:column;gap:8px;}
+.reinvest-rule{display:flex;gap:10px;align-items:flex-start;font-size:12px;}
+.reinvest-rule-icon{font-size:18px;flex-shrink:0;}
+.reinvest-rule b{color:var(--t1);}
+
+/* ── MODAL ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.32);z-index:500;align-items:center;justify-content:center;}
+.modal-bg.on{display:flex;}
+.modal{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:22px;width:360px;max-width:92vw;box-shadow:0 8px 40px rgba(0,0,0,.16);}
+.modal-title{font-size:15px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;}
+.modal-close{background:none;border:none;color:var(--t3);cursor:pointer;font-size:20px;line-height:1;}
+.modal-close:hover{color:var(--red);}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:48px 16px;color:var(--t3);}
+.empty-ico{font-size:38px;margin-bottom:12px;opacity:.35;}
+.empty-t{font-size:14px;font-weight:700;color:var(--t2);margin-bottom:5px;}
+.empty-s{font-size:12px;line-height:1.6;}
+
+/* ── MISC ── */
+.divider{height:1px;background:var(--b1);margin:14px 0;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.ai{animation:fadeUp .3s ease both;}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="hdr-logo">
+    <div class="hdr-icon">BL</div>
+    <div>
+      <div class="hdr-title">Bond Ladder Pro</div>
+      <div class="hdr-sub">Инвестиционная стратегия · Облигации + Акции</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <div class="hdr-badge">БКС &nbsp;<em>●</em>&nbsp; Live</div>
+    <button class="tbtn" onclick="openSettings()">⚙ Настройки</button>
+  </div>
+</header>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-bg" id="settingsModal">
+  <div class="modal">
+    <div class="modal-title">Настройки <button class="modal-close" onclick="closeSettings()">✕</button></div>
+    <div class="frow"><div class="fg"><div class="flabel">Сумма инвестиций (₽)</div><input type="number" class="fi" id="investAmount" value="1000000" min="10000" step="10000"/></div></div>
+    <div class="frow"><div class="fg"><div class="flabel">Ежемесячный взнос (₽)</div><input type="number" class="fi" id="monthlyAmount" value="50000" min="1000" step="1000"/></div></div>
+    <div style="margin-top:14px"><button class="btn btn-gold" onclick="saveSettings()">Сохранить</button></div>
+  </div>
+</div>
+
+<!-- PANELS -->
+<div class="wrap">
+
+  <!-- PANEL 1: LADDER -->
+  <div class="panel ai" style="animation-delay:.04s">
+    <div class="panel-hdr">
+      <div class="panel-title">Параметры лестницы</div>
+      <button class="btn-reset" onclick="resetLadder()">✕ Сбросить</button>
+    </div>
+    <div class="frow">
+      <div class="fg"><div class="flabel">Валюта</div><div class="sw"><select class="fi" id="sel-currency"><option value="RUB">RUB ₽</option><option value="USD">USD $</option></select></div></div>
+      <div class="fg"><div class="flabel">Срок инвестирования</div><div class="sw"><select class="fi" id="sel-horizon" onchange="updateHorizon()">
+        <option value="1">1 год</option>
+        <option value="3" selected>3 года</option>
+        <option value="5">5 лет</option>
+        <option value="10">10 лет</option>
+        <option value="custom">Произвольный</option>
+      </select></div></div>
+    </div>
+    <div class="frow" id="custom-horizon-row" style="display:none">
+      <div class="fg"><div class="flabel">Срок (лет)</div><input type="number" class="fi" id="inp-custom-horizon" value="7" min="1" max="30"/></div>
+    </div>
+    <div class="frow">
+      <div class="fg"><div class="flabel">Длина лестницы</div><div class="sw"><select class="fi" id="sel-len"><option value="3">3 ступени</option><option value="6">6 ступеней</option><option value="10">10 ступеней</option></select></div></div>
+      <div class="fg"><div class="flabel">Ступеней в год</div><div class="sw"><select class="fi" id="sel-spy"><option value="1">1 в год</option><option value="2" selected>2 в год</option><option value="4">4 в год</option></select></div></div>
+    </div>
+    <div class="frow">
+      <div class="fg"><div class="flabel">Бумаг в ступени</div><div class="sw"><select class="fi" id="sel-bps"><option value="1" selected>1 бумага</option><option value="2">2 бумаги</option><option value="3">3 бумаги</option></select></div></div>
+      <div class="fg"><div class="flabel">Дата начала</div><input type="date" class="fi" id="inp-date"/></div>
+    </div>
+    <div class="tags" id="tags-ladder">
+      <span class="tag on">RUB</span><span class="tag on">3 года</span><span class="tag on">3 ступени</span><span class="tag on">Ступеней 2</span>
+    </div>
+    <button class="btn btn-gold" onclick="buildLadder()">Построить лестницу →</button>
+  </div>
+
+  <!-- PANEL 2: FILTERS -->
+  <div class="panel ai" style="animation-delay:.08s">
+    <div class="panel-hdr">
+      <div class="panel-title">Параметры отбора облигаций</div>
+      <button class="btn-reset" onclick="resetFilters()">✕ Сбросить</button>
+    </div>
+    <div class="frow">
+      <div class="fg"><div class="flabel">Стратегия</div><div class="sw"><select class="fi" id="sel-strategy"><option value="classic">Классическая</option><option value="income">Доходная (макс купон)</option><option value="conservative">Консервативная (ОФЗ)</option></select></div></div>
+      <div class="fg"><div class="flabel">Отклонение дат (дней)</div><input type="number" class="fi" id="inp-dev" value="90" min="0" max="365"/></div>
+    </div>
+    <div class="frow">
+      <div class="fg"><div class="flabel">Приоритет</div><div class="sw"><select class="fi" id="sel-priority"><option value="credit">Кредитный риск</option><option value="quality">Качество</option><option value="liquidity">Ликвидность</option><option value="complexity">Сложность</option></select></div></div>
+    </div>
+    <div class="flabel" style="margin-bottom:7px">Кредитный рейтинг</div>
+    <div class="cbg" id="cbg-rating">
+      <label class="cbi"><input type="checkbox" value="AAA" checked><span class="cbb">✓</span><span class="cblabel">AAA</span></label>
+      <label class="cbi"><input type="checkbox" value="AA" checked><span class="cbb">✓</span><span class="cblabel">AA</span></label>
+      <label class="cbi"><input type="checkbox" value="A" checked><span class="cbb">✓</span><span class="cblabel">A</span></label>
+      <label class="cbi"><input type="checkbox" value="BBB" checked><span class="cbb">✓</span><span class="cblabel">BBB</span></label>
+    </div>
+    <div class="frow" style="margin-top:13px">
+      <div class="fg"><div class="flabel">Качество ≥</div><div class="slrow"><input type="range" id="sl-quality" min="1" max="10" value="5"><span class="slval" id="sv-quality">5</span></div></div>
+      <div class="fg"><div class="flabel">Ликвидность ≥</div><div class="slrow"><input type="range" id="sl-liq" min="0" max="100" value="40"><span class="slval" id="sv-liq">40</span></div></div>
+    </div>
+    <button class="mftoggle" onclick="toggleMF()"><span id="mf-icon">⊕</span> Больше фильтров</button>
+    <div class="mf" id="mf-panel">
+      <div class="frow">
+        <div class="fg"><div class="flabel">Тип</div><div class="cbg">
+          <label class="cbi"><input type="checkbox" id="cb-fix" checked><span class="cbb">✓</span><span class="cblabel">Фикс</span></label>
+          <label class="cbi"><input type="checkbox" id="cb-float" checked><span class="cbb">✓</span><span class="cblabel">Флоатер</span></label>
+          <label class="cbi"><input type="checkbox" id="cb-amo" checked><span class="cbb">✓</span><span class="cblabel">Амортизация</span></label>
+        </div></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><div class="flabel">Put-оферта</div><div class="rg">
+          <label class="ri"><input type="radio" name="put" value="any" checked><span class="rd"></span><span class="rl">Любые</span></label>
+          <label class="ri"><input type="radio" name="put" value="yes"><span class="rd"></span><span class="rl">С put</span></label>
+          <label class="ri"><input type="radio" name="put" value="no"><span class="rd"></span><span class="rl">Без put</span></label>
+        </div></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><div class="flabel">Дюрация от</div><input type="number" class="fi" id="inp-durmin" value="0" min="0" step="0.1"></div>
+        <div class="fg"><div class="flabel">Дюрация до</div><input type="number" class="fi" id="inp-durmax" value="12" min="0" step="0.1"></div>
+      </div>
+    </div>
+    <div class="tags" id="tags-filter" style="margin-top:12px">
+      <span class="tag on">Отклонение 90</span><span class="tag on">Кредитный риск</span><span class="tag on">Ликвидность ≥40</span>
+    </div>
+    <button class="btn btn-outline" style="margin-top:6px" onclick="buildLadder()">Подобрать облигации</button>
+  </div>
+
+  <!-- ALLOCATION PANEL (full width) -->
+  <div class="alloc-panel full ai" style="animation-delay:.12s">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+      <div class="alloc-title" style="margin:0">Распределение ежемесячного взноса</div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:12px;color:var(--t2);font-weight:600">Взнос:</span>
+          <input type="number" class="fi" id="inp-monthly" value="50000" min="1000" step="1000" style="width:130px;padding:7px 10px" onchange="renderAllocation()"/>
+          <span style="font-size:12px;color:var(--t3)">₽/мес</span>
+        </div>
+      </div>
+    </div>
+    <div class="frow" style="margin-bottom:6px">
+      <div class="fg" style="max-width:200px">
+        <div class="flabel">Доля облигаций: <span id="bond-pct-lbl" style="color:var(--blue);font-size:12px">60%</span></div>
+        <div class="slrow"><input type="range" id="sl-bond-pct" min="0" max="100" value="60" oninput="onAllocSlide(this.value)"><span class="slval" style="color:var(--blue)" id="sv-bond-pct">60%</span></div>
+      </div>
+      <div class="fg" style="max-width:200px">
+        <div class="flabel">Доля акций: <span id="stock-pct-lbl" style="color:var(--red);font-size:12px">40%</span></div>
+        <div class="dual-bar" style="height:10px;border-radius:5px;display:flex;overflow:hidden;margin-top:10px;border:1px solid var(--b1)" id="alloc-bar">
+          <div id="alloc-bonds-bar" style="width:60%;background:linear-gradient(90deg,var(--blue),#4a90e2);height:100%;transition:width .3s"></div>
+          <div style="flex:1;background:linear-gradient(90deg,#f5864a,var(--red));height:100%"></div>
+        </div>
+      </div>
+    </div>
+    <div id="alloc-result"></div>
+  </div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar full">
+    <div class="tbr-l">
+      <button class="tbtn" onclick="exportExcel()">⬇ Скачать Excel</button>
+      <button class="tbtn" onclick="saveLadder()">💾 Сохранить</button>
+    </div>
+    <div class="tbr-r">
+      <span class="tbr-info" id="info-bar">Лестница · 3 ступени · RUB</span>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="full">
+    <div class="tabs-nav">
+      <button class="tab-btn on" onclick="switchTab('instruments',this)">≡ Инструменты</button>
+      <button class="tab-btn" onclick="switchTab('stocks',this)">📈 Акции</button>
+      <button class="tab-btn" onclick="switchTab('cashflow',this)">Денежный поток</button>
+      <button class="tab-btn" onclick="switchTab('calendar',this)">Календарь</button>
+      <button class="tab-btn" onclick="switchTab('params',this)">Параметры</button>
+      <button class="tab-btn" onclick="switchTab('market',this)">Карта рынка</button>
+      <button class="tab-btn" onclick="switchTab('scenarios',this)">Сценарии</button>
+    </div>
+
+    <!-- INSTRUMENTS -->
+    <div class="tab-content on" id="tab-instruments">
+      <div class="stats-bar">
+        <div class="stat"><div class="stat-l">Инвестиции</div><div class="stat-v" id="st-invest">1 000 000</div><div class="stat-s">₽ расчётно</div></div>
+        <div class="stat"><div class="stat-l">Средний купон</div><div class="stat-v" id="st-coupon">—</div><div class="stat-s">% годовых</div></div>
+        <div class="stat"><div class="stat-l">Ступеней</div><div class="stat-v" id="st-steps">3</div><div class="stat-s">в лестнице</div></div>
+        <div class="stat"><div class="stat-l">Горизонт</div><div class="stat-v" id="st-horizon">3 г</div><div class="stat-s">лет инвест.</div></div>
+        <div class="stat"><div class="stat-l">Рейтинг</div><div class="stat-v" id="st-rating">—</div><div class="stat-s">лучший</div></div>
+      </div>
+      <div class="lpad" id="ladder-result">
+        <div class="empty"><div class="empty-ico">📊</div><div class="empty-t">Загрузка…</div><div class="empty-s">Нажмите «Построить лестницу»</div></div>
+      </div>
+    </div>
+
+    <!-- STOCKS -->
+    <div class="tab-content" id="tab-stocks">
+      <div class="stocks-wrap">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+          <div>
+            <div style="font-size:15px;font-weight:800">Акции для наращивания капитала</div>
+            <div style="font-size:12px;color:var(--t3);margin-top:3px">Голубые фишки и ETF роста · Московская биржа и СПБ</div>
+          </div>
+          <button class="btn btn-blue btn-sm" onclick="showReinvestAdvice()">💡 Когда реинвестировать?</button>
+        </div>
+        <div class="stocks-grid" id="stocks-grid"></div>
+        <div class="reinvest-box" id="reinvest-box" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- CASHFLOW -->
+    <div class="tab-content" id="tab-cashflow">
+      <div class="stats-bar">
+        <div class="stat"><div class="stat-l">К погашению</div><div class="stat-v" id="cf-mat">—</div><div class="stat-s">₽</div></div>
+        <div class="stat"><div class="stat-l">Сумма купонов</div><div class="stat-v" id="cf-coup">—</div><div class="stat-s">₽ за период</div></div>
+        <div class="stat"><div class="stat-l">Средний купон</div><div class="stat-v" id="cf-avg">—</div><div class="stat-s">% в год</div></div>
+        <div class="stat"><div class="stat-l">Мес. с купонами</div><div class="stat-v" id="cf-mths">—</div><div class="stat-s">из 12</div></div>
+      </div>
+      <div class="cfpad">
+        <div class="cf-ctrl">
+          <div class="tg">
+            <button class="tgb on" onclick="setCFGroup('months',this)">Месяцы</button>
+            <button class="tgb" onclick="setCFGroup('quarters',this)">Кварталы</button>
+            <button class="tgb" onclick="setCFGroup('years',this)">Годы</button>
+          </div>
+          <div class="sw-row">
+            <label class="toggle"><input type="checkbox" id="cb-cumul" onchange="renderCF()"><span class="tslider"></span></label>
+            <span>Накопленным итогом</span>
+          </div>
+        </div>
+        <div class="chart-area"><div class="bar-chart" id="bar-chart"></div></div>
+        <div class="legend">
+          <div class="lgi"><div class="lgd" style="background:var(--blue)"></div>Купоны</div>
+          <div class="lgi"><div class="lgd" style="background:var(--green)"></div>Погашение</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CALENDAR -->
+    <div class="tab-content" id="tab-calendar">
+      <div class="calpad">
+        <div class="cal-ctrl">
+          <div id="year-btns" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+          <button class="typbtn on" data-etype="COUPON" onclick="toggleType(this)">Купон</button>
+          <button class="typbtn on" data-etype="MAT" onclick="toggleType(this)">Погашение</button>
+          <button class="typbtn on" data-etype="PUT" onclick="toggleType(this)">Put</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="cal-tbl">
+            <thead><tr><th>Событие</th><th>Дата</th><th>Название</th><th>Купон %</th><th>Купон ₽</th><th>Погашение ₽</th><th>Цена %</th></tr></thead>
+            <tbody id="cal-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PARAMS -->
+    <div class="tab-content" id="tab-params">
+      <div class="ppad">
+        <div class="pc"><div class="pc-title">Параметры лестницы</div><div id="p-ladder"></div></div>
+        <div class="pc"><div class="pc-title">Параметры отбора</div><div id="p-filters"></div></div>
+      </div>
+    </div>
+
+    <!-- MARKET -->
+    <div class="tab-content" id="tab-market">
+      <div class="mpad">
+        <p style="font-size:11px;color:var(--t3);margin-bottom:12px">Доходность (%) vs Ликвидность. Размер — качество эмитента. Цвет — рейтинг.</p>
+        <div class="bubble-area" id="bubble-area">
+          <div class="ax-x"></div><div class="ax-y"></div>
+          <div class="ax-xl">Ликвидность →</div><div class="ax-yl">Доходность %</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCENARIOS -->
+    <div class="tab-content" id="tab-scenarios">
+      <div class="scpad">
+        <div class="sc-cards">
+          <div class="sc-card on" onclick="selScenario(this,'base')"><div class="sc-icon">📊</div><div class="sc-title">Базовый</div><div class="sc-desc">Текущие параметры</div><div class="sc-num" id="sc-base">—</div></div>
+          <div class="sc-card" onclick="selScenario(this,'up')"><div class="sc-icon">📈</div><div class="sc-title">Рост ставок +1%</div><div class="sc-desc">Ключевая ставка +1 п.п.</div><div class="sc-num neg" id="sc-up">—</div></div>
+          <div class="sc-card" onclick="selScenario(this,'down')"><div class="sc-icon">📉</div><div class="sc-title">Падение ставок −1%</div><div class="sc-desc">Ключевая ставка −1 п.п.</div><div class="sc-num pos" id="sc-down">—</div></div>
+        </div>
+        <div class="pc" id="sc-detail"><div class="pc-title">Выберите сценарий</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// BONDS DATABASE
+// ═══════════════════════════════════════════════
+var BONDS=[
+  {name:'ОФЗ 26241',isin:'RU000A1038V6',maturity:'2026-11-17',price:97.2,nominal:1000,coupon:9.5,freq:2,type:'fix',put:null,rating:'AAA',liquidity:95,quality:10,duration:0.5},
+  {name:'ОФЗ 26226',isin:'RU000A0JXH72',maturity:'2026-10-07',price:98.1,nominal:1000,coupon:7.2,freq:2,type:'fix',put:null,rating:'AAA',liquidity:93,quality:10,duration:0.4},
+  {name:'ОФЗ 26232',isin:'RU000A101NJ3',maturity:'2027-10-06',price:93.1,nominal:1000,coupon:6.0,freq:2,type:'fix',put:null,rating:'AAA',liquidity:92,quality:10,duration:1.4},
+  {name:'ОФЗ 26236',isin:'RU000A102EM7',maturity:'2028-05-17',price:89.8,nominal:1000,coupon:5.7,freq:2,type:'fix',put:null,rating:'AAA',liquidity:90,quality:10,duration:2.0},
+  {name:'ОФЗ 26243',isin:'RU000A105A48',maturity:'2029-05-18',price:86.3,nominal:1000,coupon:9.8,freq:2,type:'fix',put:null,rating:'AAA',liquidity:87,quality:10,duration:3.0},
+  {name:'ОФЗ 26247',isin:'RU000A106G41',maturity:'2030-05-11',price:83.5,nominal:1000,coupon:12.0,freq:2,type:'fix',put:null,rating:'AAA',liquidity:85,quality:10,duration:3.8},
+  {name:'ОФЗ 26248',isin:'RU000A107415',maturity:'2031-10-08',price:79.2,nominal:1000,coupon:12.25,freq:2,type:'fix',put:null,rating:'AAA',liquidity:83,quality:10,duration:4.8},
+  {name:'ОФЗ 26249',isin:'RU000A108112',maturity:'2032-05-14',price:76.4,nominal:1000,coupon:11.5,freq:2,type:'fix',put:null,rating:'AAA',liquidity:80,quality:10,duration:5.4},
+  {name:'ОФЗ 26251',isin:'RU000A109K85',maturity:'2033-10-12',price:72.1,nominal:1000,coupon:11.0,freq:2,type:'fix',put:null,rating:'AAA',liquidity:78,quality:10,duration:6.5},
+  {name:'ГазпромКР5',isin:'RU000A103PX3',maturity:'2027-05-19',price:99.1,nominal:1000,coupon:8.5,freq:4,type:'fix',put:'2026-11-19',rating:'AA',liquidity:78,quality:9,duration:0.5},
+  {name:'РЖД-30 обл',isin:'RU000A0ZYU88',maturity:'2027-07-14',price:98.7,nominal:1000,coupon:7.8,freq:2,type:'fix',put:null,rating:'AA',liquidity:74,quality:9,duration:1.1},
+  {name:'РЖД-46 обл',isin:'RU000A105DS3',maturity:'2028-09-08',price:96.5,nominal:1000,coupon:8.9,freq:4,type:'fix',put:'2027-09-08',rating:'AA',liquidity:70,quality:9,duration:1.3},
+  {name:'Сбербанк БО-31',isin:'RU000A102HP9',maturity:'2026-12-20',price:100.1,nominal:1000,coupon:8.0,freq:4,type:'fix',put:null,rating:'AA',liquidity:82,quality:9,duration:0.6},
+  {name:'Сбербанк СБ28Р',isin:'RU000A104YT6',maturity:'2028-01-12',price:97.3,nominal:1000,coupon:16.2,freq:4,type:'float',put:'2027-01-12',rating:'AA',liquidity:76,quality:9,duration:0.6},
+  {name:'ВТБ Б-9',isin:'RU000A103RW3',maturity:'2027-02-17',price:99.5,nominal:1000,coupon:9.0,freq:2,type:'fix',put:null,rating:'A',liquidity:65,quality:8,duration:0.7},
+  {name:'Роснефть 002Р-08',isin:'RU000A105EE3',maturity:'2028-03-25',price:95.4,nominal:1000,coupon:10.7,freq:4,type:'fix',put:'2027-03-25',rating:'AA',liquidity:72,quality:9,duration:0.8},
+  {name:'Лукойл 1Р-06',isin:'RU000A104SY6',maturity:'2027-04-15',price:98.0,nominal:1000,coupon:9.5,freq:4,type:'fix',put:null,rating:'AA',liquidity:69,quality:9,duration:0.9},
+  {name:'Норникель 1Р-07',isin:'RU000A104ZK2',maturity:'2028-06-30',price:96.2,nominal:1000,coupon:10.1,freq:2,type:'fix',put:null,rating:'AA',liquidity:71,quality:9,duration:2.1},
+  {name:'МТС 001Р-25',isin:'RU000A104JQ3',maturity:'2026-10-29',price:99.8,nominal:1000,coupon:11.0,freq:4,type:'fix',put:null,rating:'A',liquidity:68,quality:8,duration:0.4},
+  {name:'Магнит БО-005Р-02',isin:'RU000A103WS9',maturity:'2027-03-23',price:99.2,nominal:1000,coupon:11.5,freq:4,type:'fix',put:null,rating:'A',liquidity:60,quality:7,duration:0.8},
+  {name:'X5 Finance 001Р-04',isin:'RU000A104RW1',maturity:'2026-11-26',price:100.3,nominal:1000,coupon:11.8,freq:4,type:'fix',put:null,rating:'A',liquidity:62,quality:8,duration:0.5},
+  {name:'Самолёт П15',isin:'RU000A105805',maturity:'2027-06-11',price:94.2,nominal:1000,coupon:16.5,freq:4,type:'fix',put:'2026-12-11',rating:'BBB',liquidity:55,quality:6,duration:0.5},
+  {name:'ЛСР БО 1Р-09',isin:'RU000A105BR5',maturity:'2027-11-25',price:96.1,nominal:1000,coupon:14.0,freq:4,type:'amo',put:null,rating:'BBB',liquidity:52,quality:6,duration:1.4},
+  {name:'Россети МР БО-1',isin:'RU000A103PB9',maturity:'2028-08-07',price:93.7,nominal:1000,coupon:9.3,freq:2,type:'fix',put:'2027-08-07',rating:'A',liquidity:63,quality:8,duration:1.2},
+  {name:'АФК Система 1Р-22',isin:'RU000A105F85',maturity:'2027-09-22',price:97.8,nominal:1000,coupon:13.5,freq:4,type:'fix',put:'2026-09-22',rating:'BBB',liquidity:58,quality:7,duration:0.3},
+  {name:'ИнтЛиз1Р07',isin:'RU000A105PX7',maturity:'2026-10-31',price:98.3,nominal:1000,coupon:15.5,freq:4,type:'fix',put:null,rating:'BB',liquidity:50,quality:5,duration:0.4},
+  {name:'ГТЛК 1Р-15',isin:'RU000A103VS5',maturity:'2029-04-17',price:91.3,nominal:1000,coupon:13.8,freq:4,type:'amo',put:'2027-10-17',rating:'A',liquidity:57,quality:7,duration:1.4},
+  {name:'Whoosh 1P-02',isin:'RU000A105CS7',maturity:'2027-12-21',price:97.0,nominal:1000,coupon:14.5,freq:4,type:'fix',put:null,rating:'BBB',liquidity:53,quality:6,duration:1.6},
+  {name:'Эталон 1Р-09',isin:'RU000A105GJ3',maturity:'2028-02-15',price:93.1,nominal:1000,coupon:16.0,freq:4,type:'fix',put:'2027-02-15',rating:'BBB',liquidity:51,quality:6,duration:0.7},
+  {name:'Норникель 2Р-04',isin:'RU000A106BR5',maturity:'2030-11-20',price:90.2,nominal:1000,coupon:11.8,freq:2,type:'fix',put:null,rating:'AA',liquidity:68,quality:9,duration:3.6},
+  {name:'Газпром 1Р-13',isin:'RU000A107C14',maturity:'2031-06-25',price:87.5,nominal:1000,coupon:12.5,freq:2,type:'fix',put:'2028-12-25',rating:'AA',liquidity:65,quality:9,duration:2.4},
+];
+
+// ═══════════════════════════════════════════════
+// STOCKS DATABASE
+// ═══════════════════════════════════════════════
+var STOCKS=[
+  {ticker:'SBER',name:'Сбербанк',sector:'Финансы',price:298.5,priceBase:268.0,
+   targetLow:270,targetHigh:360,histMin:234.0,analystTarget:345,
+   divYield:12.1,pe:4.2,marketCap:'6.7T',
+   trend:0.0085,volatility:0.018,
+   desc:'Крупнейший банк России. Стабильные дивиденды, цифровая трансформация.'},
+  {ticker:'LKOH',name:'Лукойл',sector:'Нефть и газ',price:6840.0,priceBase:6120.0,
+   targetLow:6200,targetHigh:8200,histMin:5450.0,analystTarget:7800,
+   divYield:14.3,pe:5.1,marketCap:'4.7T',
+   trend:0.007,volatility:0.022,
+   desc:'Крупнейшая частная нефтяная компания. Высокие дивиденды, экспортные доходы.'},
+  {ticker:'YNDX',name:'Яндекс',sector:'Технологии',price:4120.0,priceBase:3650.0,
+   targetLow:3800,targetHigh:5500,histMin:2980.0,analystTarget:5200,
+   divYield:0.0,pe:28.5,marketCap:'1.3T',
+   trend:0.012,volatility:0.031,
+   desc:'Технологический лидер России. AI-направление, e-commerce, сервисы.'},
+  {ticker:'GMKN',name:'Норильский Никель',sector:'Металлы',price:121.8,priceBase:108.5,
+   targetLow:115,targetHigh:160,histMin:96.0,analystTarget:148,
+   divYield:8.9,pe:7.8,marketCap:'1.9T',
+   trend:0.006,volatility:0.024,
+   desc:'Мировой лидер по никелю и палладию. Восстановление после коррекции.'},
+  {ticker:'MOEX',name:'Московская Биржа',sector:'Финансы',price:228.4,priceBase:196.0,
+   targetLow:210,targetHigh:280,histMin:178.0,analystTarget:265,
+   divYield:9.5,pe:8.2,marketCap:'1.1T',
+   trend:0.009,volatility:0.016,
+   desc:'Инфраструктурная монополия. Рост оборотов, стабильные дивиденды.'},
+];
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+var G={
+  steps:[],cfGroup:'months',calYear:null,
+  calTypes:new Set(['COUPON','MAT','PUT']),
+  scenario:'base',invest:1000000,monthly:50000,
+  bondPct:60
+};
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+window.onload=function(){
+  var d=new Date(); d.setMonth(d.getMonth()+1);
+  document.getElementById('inp-date').value=d.toISOString().slice(0,10);
+  document.getElementById('sl-quality').addEventListener('input',function(){document.getElementById('sv-quality').textContent=this.value;});
+  document.getElementById('sl-liq').addEventListener('input',function(){document.getElementById('sv-liq').textContent=this.value;});
+  document.querySelectorAll('.cbi input[type=checkbox]').forEach(function(cb){
+    cb.addEventListener('change',function(){this.nextElementSibling.textContent=this.checked?'✓':'';});
+  });
+  buildLadder();
+  renderStocks();
+  renderAllocation();
+};
+
+// ═══════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════
+function pd(s){return new Date(s+'T00:00:00');}
+function fd(d){if(!d)return'—';var dt=typeof d==='string'?pd(d):d;return dt.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric'});}
+function fm(n){if(n==null||isNaN(n))return'—';return Math.round(n).toLocaleString('ru-RU');}
+function addMonths(d,m){var r=new Date(d);r.setMonth(r.getMonth()+m);return r;}
+function ytm(b){var p=b.price/100*b.nominal;var mat=pd(b.maturity);var now=new Date();var yrs=Math.max(0.08,(mat-now)/(365.25*86400000));return Math.max(0,(b.coupon/100*b.nominal+(b.nominal-p)/yrs)/((b.nominal+p)/2)*100);}
+
+// ═══════════════════════════════════════════════
+// HORIZON LOGIC
+// ═══════════════════════════════════════════════
+function updateHorizon(){
+  var h=document.getElementById('sel-horizon').value;
+  document.getElementById('custom-horizon-row').style.display=h==='custom'?'flex':'none';
+}
+function getHorizonYears(){
+  var h=document.getElementById('sel-horizon').value;
+  if(h==='custom')return parseFloat(document.getElementById('inp-custom-horizon').value)||3;
+  return parseFloat(h);
+}
+
+// ═══════════════════════════════════════════════
+// BUILD LADDER
+// ═══════════════════════════════════════════════
+var STEPCOLORS=['#0a7c52','#1a5cbf','#c97c00','#c0392b','#6b3fbf','#b85a00','#0891b2','#854d0e','#1e3a5f','#4a1942'];
+var STEPBGS=['#e6f7f1','#e8f0fc','#fff8e6','#fdecea','#f0ebfc','#fff3e6','#e0f4f9','#fef9c3','#dbeafe','#fdf4ff'];
+
+function buildLadder(){
+  var currency=document.getElementById('sel-currency').value;
+  var horizonYrs=getHorizonYears();
+  var len=parseInt(document.getElementById('sel-len').value);
+  var spy=parseInt(document.getElementById('sel-spy').value);
+  var bps=parseInt(document.getElementById('sel-bps').value);
+  var dateStr=document.getElementById('inp-date').value;
+  var strategy=document.getElementById('sel-strategy').value;
+  var dev=parseInt(document.getElementById('inp-dev').value)||90;
+  var priority=document.getElementById('sel-priority').value;
+  var minQ=parseInt(document.getElementById('sl-quality').value);
+  var minL=parseInt(document.getElementById('sl-liq').value);
+  var ratings=[];
+  document.querySelectorAll('#cbg-rating input[type=checkbox]').forEach(function(cb){if(cb.checked)ratings.push(cb.value);});
+  var types=[];
+  if(document.getElementById('cb-fix').checked)types.push('fix');
+  if(document.getElementById('cb-float').checked)types.push('float');
+  if(document.getElementById('cb-amo').checked)types.push('amo');
+  var putF=document.querySelector('input[name="put"]:checked').value;
+  var durMin=parseFloat(document.getElementById('inp-durmin').value)||0;
+  var durMax=parseFloat(document.getElementById('inp-durmax').value)||12;
+  var startDate=dateStr?pd(dateStr):new Date();
+  var now=new Date();
+  var steps=[];
+
+  // Compute step interval from horizon and steps-per-year
+  // Total months = horizonYrs * 12, distributed across len steps
+  var totalMonths=horizonYrs*12;
+  var intervalMonths=totalMonths/len;
+
+  for(var s=1;s<=len;s++){
+    var target=addMonths(startDate,s*intervalMonths);
+    var lo=new Date(target);lo.setDate(lo.getDate()-dev);
+    var hi=new Date(target);hi.setDate(hi.getDate()+dev);
+
+    var pool=BONDS.filter(function(b){
+      if(strategy==='conservative'&&b.name.indexOf('ОФЗ')!==0)return false;
+      if(ratings.indexOf(b.rating)<0)return false;
+      if(b.quality<minQ)return false;
+      if(b.liquidity<minL)return false;
+      if(types.indexOf(b.type)<0)return false;
+      if(putF==='yes'&&!b.put)return false;
+      if(putF==='no'&&b.put)return false;
+      if(b.duration<durMin||b.duration>durMax)return false;
+      var eff=b.put?pd(b.put):pd(b.maturity);
+      if(eff<now)return false;
+      return true;
+    });
+
+    var cands=pool.filter(function(b){
+      var mat=pd(b.maturity);var put=b.put?pd(b.put):null;
+      return(mat>=lo&&mat<=hi)||(put&&put>=lo&&put<=hi);
+    });
+    if(!cands.length){
+      var lo2=new Date(target);lo2.setDate(lo2.getDate()-180);
+      var hi2=new Date(target);hi2.setDate(hi2.getDate()+180);
+      cands=pool.filter(function(b){
+        var mat=pd(b.maturity);var put=b.put?pd(b.put):null;
+        return(mat>=lo2&&mat<=hi2)||(put&&put>=lo2&&put<=hi2);
+      });
+    }
+    if(!cands.length&&pool.length){
+      var scored=pool.map(function(b){var eff=b.put?pd(b.put):pd(b.maturity);return{b:b,d:Math.abs(eff-target)};});
+      scored.sort(function(a,b){return a.d-b.d;});
+      cands=scored.slice(0,Math.max(bps*3,5)).map(function(x){return x.b;});
+    }
+    cands.sort(function(a,b){
+      if(priority==='credit'){var o={AAA:0,AA:1,A:2,BBB:3,BB:4};return(o[a.rating]||5)-(o[b.rating]||5);}
+      if(priority==='quality')return b.quality-a.quality;
+      if(priority==='liquidity')return b.liquidity-a.liquidity;
+      if(priority==='complexity'){var t={fix:0,amo:1,float:2};return(t[a.type]||2)-(t[b.type]||2);}
+      return 0;
+    });
+    if(strategy==='income')cands.sort(function(a,b){return b.coupon-a.coupon;});
+    steps.push({step:s,target:target,intervalMonths:intervalMonths,bonds:cands.slice(0,bps)});
+  }
+
+  G.steps=steps;
+  G.invest=parseInt(document.getElementById('investAmount').value)||1000000;
+
+  var prioSel=document.getElementById('sel-priority');
+  var horizonLabel=document.getElementById('sel-horizon').value==='custom'?getHorizonYears()+' лет':document.getElementById('sel-horizon').options[document.getElementById('sel-horizon').selectedIndex].text;
+  document.getElementById('tags-ladder').innerHTML='<span class="tag on">'+currency+'</span><span class="tag on">'+horizonLabel+'</span><span class="tag on">'+len+' ступеней</span><span class="tag on">Шаг '+Math.round(intervalMonths)+' мес</span>';
+  document.getElementById('tags-filter').innerHTML='<span class="tag on">Откл. '+dev+' дн</span><span class="tag on">'+prioSel.options[prioSel.selectedIndex].text+'</span><span class="tag on">Лик ≥'+minL+'</span>';
+  document.getElementById('info-bar').textContent='Лестница · '+len+' ступеней · '+horizonLabel+' · '+currency;
+  document.getElementById('st-steps').textContent=len;
+  document.getElementById('st-invest').textContent=fm(G.invest);
+  document.getElementById('st-horizon').textContent=horizonYrs+' г';
+
+  renderLadder();renderCF();renderCalendar();renderParams();renderMarket();renderScenarios();renderAllocation();
+}
+
+// ═══════════════════════════════════════════════
+// RENDER LADDER
+// ═══════════════════════════════════════════════
+function renderLadder(){
+  var el=document.getElementById('ladder-result');
+  var steps=G.steps;
+  if(!steps.length){el.innerHTML='<div class="empty"><div class="empty-ico">🔍</div><div class="empty-t">Нет данных</div></div>';return;}
+  var allBonds=[];steps.forEach(function(s){s.bonds.forEach(function(b){allBonds.push(b);});});
+  var avgC=allBonds.length?allBonds.reduce(function(s,b){return s+b.coupon;},0)/allBonds.length:0;
+  var topR=['AAA','AA','A','BBB','BB'].find(function(r){return allBonds.some(function(b){return b.rating===r;});})||'—';
+  document.getElementById('st-coupon').textContent=allBonds.length?avgC.toFixed(1)+'%':'—';
+  document.getElementById('st-rating').textContent=topR;
+
+  var html='';
+  steps.forEach(function(st,idx){
+    var col=STEPCOLORS[idx%STEPCOLORS.length];
+    var bg=STEPBGS[idx%STEPBGS.length];
+    var share=st.bonds.length?(100/st.bonds.length).toFixed(1):0;
+    var stepInterval=Math.round(st.intervalMonths);
+    html+='<div class="step-grp ai" style="animation-delay:'+(idx*0.05)+'s">'
+      +'<div class="step-hdr" style="background:'+bg+';border:1px solid '+col+'22">'
+      +'<div class="step-num" style="background:'+col+'">'+st.step+'</div>'
+      +'<div class="step-lbl" style="color:'+col+'">Ступень '+st.step+'</div>'
+      +'<div class="step-date">Цель: '+fd(st.target)+'</div>'
+      +'<div class="step-date" style="margin-left:4px">+'+stepInterval+' мес</div>'
+      +'</div>';
+    if(!st.bonds.length){
+      html+='<div class="no-bonds">Нет облигаций. Увеличьте «Отклонение дат» или смягчите фильтры.</div>';
+    } else {
+      html+='<div style="overflow-x:auto;border-radius:var(--rs);border:1px solid var(--b1)">'
+        +'<table class="bt"><thead><tr><th>Дата / Событие</th><th>Название</th><th>Доходность</th><th>Купон</th><th>Цена</th><th>Рейтинг</th><th>Кач-во</th><th>Ликв.</th><th>Доля</th></tr></thead><tbody>';
+      st.bonds.forEach(function(b){
+        var y=ytm(b).toFixed(2);
+        var effDate=b.put?b.put:b.maturity;
+        var ev=b.put?'put':'погаш';
+        var qc=b.quality>=8?'#0a7c52':b.quality>=6?'#c97c00':'#c0392b';
+        var qbg=b.quality>=8?'#e6f7f1':b.quality>=6?'#fff8e6':'#fdecea';
+        var lc=b.liquidity>=70?'#0a7c52':b.liquidity>=50?'#1a5cbf':'#c0392b';
+        var lbg=b.liquidity>=70?'#e6f7f1':b.liquidity>=50?'#e8f0fc':'#fdecea';
+        html+='<tr>'
+          +'<td><div class="bdate">'+fd(effDate)+'</div><div class="bev">'+ev+'</div></td>'
+          +'<td><div class="bname">'+b.name+'</div><div class="bisin">'+b.isin+'</div></td>'
+          +'<td><span class="byield">'+y+'%</span></td>'
+          +'<td><span style="font-family:IBM Plex Mono,monospace;font-weight:600;font-size:12px">'+b.coupon+'%</span></td>'
+          +'<td><span style="font-family:IBM Plex Mono,monospace;font-size:12px;color:var(--t2)">'+b.price+'%</span></td>'
+          +'<td><span class="pill r-'+b.rating+'">'+b.rating+'</span></td>'
+          +'<td><span class="pill" style="background:'+qbg+';color:'+qc+'">'+b.quality+'</span></td>'
+          +'<td><span class="pill" style="background:'+lbg+';color:'+lc+'">'+b.liquidity+'</span></td>'
+          +'<td><span class="share">'+share+'%</span></td>'
+          +'</tr>';
+      });
+      html+='</tbody></table></div>';
+    }
+    html+='</div>';
+  });
+  el.innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════
+// CASHFLOW
+// ═══════════════════════════════════════════════
+function setCFGroup(g,btn){G.cfGroup=g;document.querySelectorAll('.tgb').forEach(function(b){b.classList.remove('on');});btn.classList.add('on');renderCF();}
+function renderCF(){
+  var allBonds=[];G.steps.forEach(function(s){s.bonds.forEach(function(b){allBonds.push(b);});});
+  var ipb=G.invest/Math.max(allBonds.length,1);
+  var cumul=document.getElementById('cb-cumul').checked;var now=new Date();
+  var events=[];
+  allBonds.forEach(function(b){
+    var mat=pd(b.maturity);var mpc=12/b.freq;var cp=new Date(mat);var cnt=0;
+    while(cp>now&&cnt<80){events.push({date:new Date(cp),type:'coupon',amt:ipb*b.coupon/100/b.freq});cp=new Date(cp);cp.setMonth(cp.getMonth()-mpc);cnt++;}
+    events.push({date:mat,type:'mat',amt:ipb});
+  });
+  function gkey(d){if(G.cfGroup==='months')return d.getFullYear()*100+d.getMonth();if(G.cfGroup==='quarters')return d.getFullYear()*10+Math.floor(d.getMonth()/3);return d.getFullYear();}
+  function glbl(d){if(G.cfGroup==='months')return d.toLocaleDateString('ru-RU',{month:'short',year:'2-digit'});if(G.cfGroup==='quarters')return'Q'+(Math.floor(d.getMonth()/3)+1)+' '+d.getFullYear();return''+d.getFullYear();}
+  var grps={};
+  events.sort(function(a,b){return a.date-b.date;}).forEach(function(ev){var k=gkey(ev.date);if(!grps[k])grps[k]={lbl:glbl(ev.date),k:k,cp:0,mt:0};if(ev.type==='coupon')grps[k].cp+=ev.amt;else grps[k].mt+=ev.amt;});
+  var arr=Object.values(grps).sort(function(a,b){return a.k-b.k;});
+  if(cumul){var rc=0,rm=0;arr.forEach(function(g){rc+=g.cp;rm+=g.mt;g.cp=rc;g.mt=rm;});}
+  var maxV=Math.max.apply(null,arr.map(function(g){return g.cp+g.mt;}))||1;var H=158;
+  var bhtml='';
+  arr.forEach(function(g){var ch=Math.round(g.cp/maxV*H);var mh=Math.round(g.mt/maxV*H);bhtml+='<div class="bg"><div class="bstack">'+(mh>0?'<div class="bseg mt" style="height:'+mh+'px" title="Погашение '+fm(g.mt)+'₽"></div>':'')+(ch>0?'<div class="bseg cp" style="height:'+ch+'px" title="Купоны '+fm(g.cp)+'₽"></div>':'')+'</div><div class="blbl">'+g.lbl+'</div></div>';});
+  document.getElementById('bar-chart').innerHTML=bhtml||'<div style="color:var(--t3);padding:20px;font-size:12px">Нет данных</div>';
+  var totC=allBonds.reduce(function(s,b){return s+ipb*b.coupon/100;},0);
+  var totM=ipb*allBonds.length;
+  var avgC=allBonds.length?allBonds.reduce(function(s,b){return s+b.coupon;},0)/allBonds.length:0;
+  var mwc=new Set(events.filter(function(e){return e.type==='coupon';}).map(function(e){return e.date.getMonth();})).size;
+  document.getElementById('cf-mat').textContent=fm(totM);
+  document.getElementById('cf-coup').textContent=fm(totC);
+  document.getElementById('cf-avg').textContent=avgC.toFixed(1)+'%';
+  document.getElementById('cf-mths').textContent=mwc;
+}
+
+// ═══════════════════════════════════════════════
+// CALENDAR
+// ═══════════════════════════════════════════════
+function renderCalendar(){
+  var allBonds=[];G.steps.forEach(function(s){s.bonds.forEach(function(b){allBonds.push(b);});});
+  var ipb=G.invest/Math.max(allBonds.length,1);var now=new Date();
+  var events=[];
+  allBonds.forEach(function(b){
+    var mat=pd(b.maturity);var mpc=12/b.freq;var cp=new Date(mat);var cnt=0;
+    while(cp>now&&cnt<80){events.push({etype:'COUPON',date:new Date(cp),name:b.name,cpct:b.coupon,camt:ipb*b.coupon/100/b.freq,namt:null,price:b.price});cp=new Date(cp);cp.setMonth(cp.getMonth()-mpc);cnt++;}
+    events.push({etype:'MAT',date:mat,name:b.name,cpct:b.coupon,camt:null,namt:ipb,price:b.price});
+    if(b.put)events.push({etype:'PUT',date:pd(b.put),name:b.name,cpct:b.coupon,camt:null,namt:ipb,price:100});
+  });
+  events.sort(function(a,b){return a.date-b.date;});
+  var years=[...new Set(events.map(function(e){return e.date.getFullYear();}))].sort();
+  var yhtml='<button class="ybtn'+(G.calYear===null?' on':'')+'" onclick="setYear(null,this)">Все</button>';
+  years.forEach(function(y){yhtml+='<button class="ybtn'+(G.calYear===y?' on':'')+'" onclick="setYear('+y+',this)">'+y+'</button>';});
+  document.getElementById('year-btns').innerHTML=yhtml;
+  var filtered=events.filter(function(e){if(G.calYear!==null&&e.date.getFullYear()!==G.calYear)return false;return G.calTypes.has(e.etype);});
+  var rows=filtered.map(function(e){
+    var cls=e.etype==='COUPON'?'ev-C':e.etype==='MAT'?'ev-M':'ev-P';
+    var lbl=e.etype==='COUPON'?'КУПОН':e.etype==='MAT'?'ПОГАШ':'PUT';
+    return'<tr><td><span class="ev '+cls+'">'+lbl+'</span></td><td>'+fd(e.date)+'</td><td style="color:var(--t1);font-family:Manrope,sans-serif;font-weight:600;font-size:12px">'+e.name+'</td><td>'+e.cpct+'%</td><td>'+(e.camt?fm(e.camt)+' ₽':'—')+'</td><td>'+(e.namt?fm(e.namt)+' ₽':'—')+'</td><td>'+e.price+'%</td></tr>';
+  }).join('');
+  document.getElementById('cal-body').innerHTML=rows||'<tr><td colspan="7" style="text-align:center;color:var(--t3);padding:22px;font-family:Manrope,sans-serif">Нет событий</td></tr>';
+}
+function setYear(y,btn){G.calYear=y;document.querySelectorAll('.ybtn').forEach(function(b){b.classList.remove('on');});btn.classList.add('on');renderCalendar();}
+function toggleType(btn){var t=btn.dataset.etype;if(G.calTypes.has(t))G.calTypes.delete(t);else G.calTypes.add(t);btn.classList.toggle('on');renderCalendar();}
+
+// ═══════════════════════════════════════════════
+// PARAMS
+// ═══════════════════════════════════════════════
+function renderParams(){
+  function row(k,v){return'<div class="pr"><span class="pk">'+k+'</span><span class="pv">'+v+'</span></div>';}
+  var hSel=document.getElementById('sel-horizon');
+  var hLabel=hSel.value==='custom'?getHorizonYears()+' лет':hSel.options[hSel.selectedIndex].text;
+  document.getElementById('p-ladder').innerHTML=
+    row('Горизонт',hLabel)+row('Валюта',document.getElementById('sel-currency').value)+
+    row('Ступеней',document.getElementById('sel-len').value)+row('В год',document.getElementById('sel-spy').value)+
+    row('Бумаг/ступень',document.getElementById('sel-bps').value)+row('Начало',fd(document.getElementById('inp-date').value));
+  var strat=document.getElementById('sel-strategy');var prio=document.getElementById('sel-priority');
+  var rs=[];document.querySelectorAll('#cbg-rating input:checked').forEach(function(c){rs.push(c.value);});
+  document.getElementById('p-filters').innerHTML=
+    row('Стратегия',strat.options[strat.selectedIndex].text)+row('Отклонение',document.getElementById('inp-dev').value+' дн')+
+    row('Приоритет',prio.options[prio.selectedIndex].text)+row('Рейтинги',rs.join(', '))+
+    row('Качество ≥',document.getElementById('sl-quality').value)+row('Ликвидность ≥',document.getElementById('sl-liq').value);
+}
+
+// ═══════════════════════════════════════════════
+// MARKET MAP
+// ═══════════════════════════════════════════════
+function renderMarket(){
+  var area=document.getElementById('bubble-area');
+  area.querySelectorAll('.bbl').forEach(function(b){b.remove();});
+  var W=area.offsetWidth-66;var H=area.offsetHeight-44;
+  var rColors={AAA:'#0a7c52',AA:'#1a5cbf',A:'#6b3fbf',BBB:'#c97c00',BB:'#c0392b'};
+  BONDS.forEach(function(b){
+    var y=ytm(b);var x=52+(b.liquidity/100)*W;var yp=(H+14)-((y-4)/22)*H;
+    yp=Math.max(14,Math.min(H+14,yp));var sz=12+b.quality*2;var col=rColors[b.rating]||'#8590a8';
+    var el=document.createElement('div');el.className='bbl';
+    el.style.cssText='left:'+x+'px;top:'+yp+'px;width:'+sz+'px;height:'+sz+'px;background:'+col+';opacity:0.82;';
+    el.innerHTML='<div class="bbl-tip"><b>'+b.name+'</b><span style="color:var(--t2)">YTM: '+y.toFixed(2)+'% · Лик: '+b.liquidity+' · '+b.rating+'</span></div>';
+    area.appendChild(el);
+  });
+}
+
+// ═══════════════════════════════════════════════
+// SCENARIOS
+// ═══════════════════════════════════════════════
+function selScenario(card,sc){G.scenario=sc;document.querySelectorAll('.sc-card').forEach(function(c){c.classList.remove('on');});card.classList.add('on');renderScenarios();}
+function renderScenarios(){
+  var allBonds=[];G.steps.forEach(function(s){s.bonds.forEach(function(b){allBonds.push(b);});});
+  var ipb=G.invest/Math.max(allBonds.length,1);
+  var totC=allBonds.reduce(function(s,b){return s+ipb*b.coupon/100;},0);
+  var totM=ipb*allBonds.length;
+  document.getElementById('sc-base').textContent=fm(totC)+' ₽/год';
+  document.getElementById('sc-up').textContent='−'+fm(totM*0.022)+' ₽';
+  document.getElementById('sc-down').textContent='+'+fm(totM*0.026)+' ₽';
+  function row(k,v,c){return'<div class="pr"><span class="pk">'+k+'</span><span class="pv'+(c?' '+c:'')+'">'+v+'</span></div>';}
+  var html='<div class="pc-title">Эффект на портфель</div>';
+  if(G.scenario==='base')html+=row('Купонов/год',fm(totC)+' ₽')+row('К погашению',fm(totM)+' ₽')+row('Доп. эффект','0 ₽');
+  else if(G.scenario==='up'){var l=totM*0.022;html+=row('Рост ставок','+1%','neg')+row('Снижение стоимости','−'+fm(l)+' ₽','neg')+row('Доп. реинвест.','+'+fm(totC*0.09)+' ₽','pos')+row('Нетто','−'+fm(l-totC*0.09)+' ₽','neg');}
+  else{var g=totM*0.026;html+=row('Пад. ставок','−1%','pos')+row('Рост стоимости','+'+fm(g)+' ₽','pos')+row('Потеря реинв.','−'+fm(totC*0.07)+' ₽','neg')+row('Нетто','+'+fm(g-totC*0.07)+' ₽','pos');}
+  document.getElementById('sc-detail').innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════
+// STOCKS
+// ═══════════════════════════════════════════════
+function genHistory(stock){
+  // Generate 12 months of fake-realistic history based on price, trend, volatility
+  var prices=[];var p=stock.priceBase;
+  var now=new Date();
+  for(var i=11;i>=0;i--){
+    var noise=(Math.random()-0.48)*stock.volatility*p*2;
+    p=p*(1+stock.trend/30)+noise;
+    prices.push(Math.max(p*0.5,p));
+  }
+  prices.push(stock.price); // current price
+  return prices;
+}
+function genForecast(stock,histLast){
+  // 6 months forward projection
+  var prices=[histLast];var p=histLast;
+  for(var i=0;i<6;i++){
+    var noise=(Math.random()-0.45)*stock.volatility*p*1.5;
+    p=p*(1+stock.trend/20)+noise;
+    prices.push(p);
+  }
+  return prices;
+}
+
+function drawStockChart(canvas,stock){
+  var ctx=canvas.getContext('2d');
+  var W=canvas.width=canvas.offsetWidth*2; // retina
+  var H=canvas.height=240;
+  ctx.scale(1,1);
+  var hist=genHistory(stock);
+  var fcast=genForecast(stock,hist[hist.length-1]);
+  var allPrices=hist.concat(fcast.slice(1));
+  var minP=Math.min.apply(null,allPrices)*0.97;
+  var maxP=Math.max.apply(null,allPrices)*1.03;
+  var totalPts=allPrices.length;
+  var pw=W/totalPts;
+  function px(i){return i*pw;}
+  function py(v){return H-((v-minP)/(maxP-minP))*H*0.85-H*0.07;}
+
+  ctx.clearRect(0,0,W,H);
+
+  // Target high zone
+  var thY=py(stock.targetHigh);
+  ctx.fillStyle='rgba(10,124,82,.07)';
+  ctx.fillRect(0,thY,W,py(stock.targetLow)-thY);
+
+  // Analyst target line
+  ctx.strokeStyle='rgba(10,124,82,.4)';ctx.lineWidth=1.5;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(0,py(stock.analystTarget));ctx.lineTo(W,py(stock.analystTarget));ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Historical line + fill
+  ctx.beginPath();
+  hist.forEach(function(v,i){if(i===0)ctx.moveTo(px(i),py(v));else ctx.lineTo(px(i),py(v));});
+  ctx.strokeStyle='#1a5cbf';ctx.lineWidth=2.5;ctx.stroke();
+
+  // Fill under history
+  ctx.beginPath();
+  hist.forEach(function(v,i){if(i===0)ctx.moveTo(px(i),py(v));else ctx.lineTo(px(i),py(v));});
+  ctx.lineTo(px(hist.length-1),H);ctx.lineTo(0,H);ctx.closePath();
+  ctx.fillStyle='rgba(26,92,191,.08)';ctx.fill();
+
+  // Forecast line (dashed)
+  var fo=hist.length-1;
+  ctx.beginPath();
+  fcast.forEach(function(v,i){if(i===0)ctx.moveTo(px(fo+i),py(v));else ctx.lineTo(px(fo+i),py(v));});
+  ctx.strokeStyle='rgba(240,180,41,.8)';ctx.lineWidth=2;ctx.setLineDash([5,3]);ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Reinvest zone dot
+  var reinvestPrice=stock.price*1.20;
+  if(reinvestPrice<=maxP){
+    var rxIdx=hist.length+2;
+    var rx=px(rxIdx);var ry=py(reinvestPrice);
+    ctx.beginPath();ctx.arc(rx,ry,6,0,Math.PI*2);
+    ctx.fillStyle='#c0392b';ctx.fill();
+    ctx.fillStyle='#c0392b';ctx.font='bold 18px Manrope,sans-serif';ctx.fillText('⚡',rx-5,ry-10);
+  }
+
+  // Current price dot
+  var cpx=px(hist.length-1);var cpy=py(stock.price);
+  ctx.beginPath();ctx.arc(cpx,cpy,5,0,Math.PI*2);
+  ctx.fillStyle='#1a5cbf';ctx.fill();
+  ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+}
+
+function renderStocks(){
+  var grid=document.getElementById('stocks-grid');
+  var html='';
+  STOCKS.forEach(function(s,idx){
+    var change=((s.price-s.priceBase)/s.priceBase*100);
+    var changeClass=change>=0?'up':'dn';
+    var changeStr=(change>=0?'+':'')+change.toFixed(1)+'%';
+    var isSell=s.price>s.targetHigh*1.10;
+    var isBuy=s.price<s.histMin*1.05;
+    var reinvestClass=isSell?'alert-sell':isBuy?'alert-buy':'';
+    var reinvestMsg=isSell?'⚠️ Цена выше прогноза на 10%+ — рассмотрите продажу части позиции и перекладку в облигации':
+      isBuy?'💚 Цена вблизи исторического минимума — возможность докупить':
+      '📊 Цена в нормальном диапазоне. При росте >'+Math.round(s.targetHigh/s.price*100-100)+'% рассмотрите фиксацию прибыли';
+    html+='<div class="stock-card ai" style="animation-delay:'+(idx*0.07)+'s">'
+      +'<div class="sc-head">'
+      +'<div><div class="sc-ticker">'+s.ticker+'</div><div class="sc-company">'+s.name+' · '+s.sector+'</div></div>'
+      +'<div class="sc-price-block"><div class="sc-price">'+s.price.toLocaleString('ru-RU')+'₽</div><div class="sc-change '+changeClass+'">'+changeStr+' за год</div></div>'
+      +'</div>'
+      +'<div class="sc-chart-area"><canvas class="sc-canvas" id="canvas-'+s.ticker+'" style="width:100%;height:120px"></canvas></div>'
+      +'<div style="padding:6px 16px 4px;font-size:9px;color:var(--t3);font-family:IBM Plex Mono,monospace;display:flex;gap:16px">'
+      +'<span>— История</span><span style="color:rgba(240,180,41,.9)">- - - Прогноз</span><span style="background:rgba(10,124,82,.07);padding:0 4px">▓ Целевая зона</span>'
+      +'</div>'
+      +'<div class="sc-meta">'
+      +'<div class="sc-meta-item"><div class="sc-meta-label">Цель аналитиков</div><div class="sc-meta-val" style="color:var(--green)">'+s.analystTarget.toLocaleString('ru-RU')+'₽</div></div>'
+      +'<div class="sc-meta-item"><div class="sc-meta-label">Дивиденды</div><div class="sc-meta-val" style="color:var(--blue)">'+s.divYield+'%</div></div>'
+      +'<div class="sc-meta-item"><div class="sc-meta-label">P/E</div><div class="sc-meta-val">'+s.pe+'x</div></div>'
+      +'</div>'
+      +'<div class="sc-reinvest '+reinvestClass+'">'+reinvestMsg+'</div>'
+      +'<div style="padding:8px 16px;font-size:11px;color:var(--t3)">'+s.desc+'</div>'
+      +'</div>';
+  });
+  grid.innerHTML=html;
+  // Draw charts after DOM update
+  setTimeout(function(){
+    STOCKS.forEach(function(s){
+      var canvas=document.getElementById('canvas-'+s.ticker);
+      if(canvas)drawStockChart(canvas,s);
+    });
+  },100);
+}
+
+// ═══════════════════════════════════════════════
+// REINVEST ADVICE
+// ═══════════════════════════════════════════════
+function showReinvestAdvice(){
+  var box=document.getElementById('reinvest-box');
+  var isVisible=box.style.display!=='none';
+  if(isVisible){box.style.display='none';return;}
+  box.style.display='block';
+  box.innerHTML='<div class="reinvest-title">💡 Правила реинвестирования прибыли от акций</div>'
+    +'<div class="reinvest-rules">'
+    +'<div class="reinvest-rule"><div class="reinvest-rule-icon">📈</div><div><b>Если текущая цена выросла выше верхней прогнозной границы на 10%+</b> — продайте 25–30% позиции и переложите прибыль в облигации (ступень с ближайшим сроком). Зафиксируйте прибыль, не рискуя основным капиталом.</div></div>'
+    +'<div class="reinvest-rule"><div class="reinvest-rule-icon">📉</div><div><b>Если цена упала ниже исторического минимума</b> — рассмотрите докупку акций на 10–20% от свободного денежного потока (купоны + погашения). Усредняйте позицию, если фундаментальные показатели не изменились.</div></div>'
+    +'<div class="reinvest-rule"><div class="reinvest-rule-icon">🔄</div><div><b>Ребалансировка раз в квартал</b> — проверяйте, что доля акций/облигаций соответствует целевому распределению. Возникший перекос корректируйте через реинвестирование купонных выплат.</div></div>'
+    +'<div class="reinvest-rule"><div class="reinvest-rule-icon">💰</div><div><b>Купонные выплаты по облигациям</b> — при поступлении купонов направляйте их обратно в акции (если рынок в просадке) или докупайте облигации следующей ступени лестницы (если акции на хаях).</div></div>'
+    +'</div>';
+}
+
+// ═══════════════════════════════════════════════
+// ALLOCATION (ежемесячный взнос)
+// ═══════════════════════════════════════════════
+function onAllocSlide(val){
+  G.bondPct=parseInt(val);
+  document.getElementById('sv-bond-pct').textContent=G.bondPct+'%';
+  document.getElementById('bond-pct-lbl').textContent=G.bondPct+'%';
+  document.getElementById('stock-pct-lbl').textContent=(100-G.bondPct)+'%';
+  document.getElementById('alloc-bonds-bar').style.width=G.bondPct+'%';
+  renderAllocation();
+}
+
+function renderAllocation(){
+  var monthly=parseInt(document.getElementById('inp-monthly').value)||50000;
+  G.monthly=monthly;
+  var bp=G.bondPct;var sp=100-bp;
+  var bondAmt=monthly*bp/100;
+  var stockAmt=monthly*sp/100;
+
+  // Pick best bonds for the amount
+  var allBonds=[];G.steps.forEach(function(s){s.bonds.forEach(function(b){allBonds.push(b);});});
+  if(!allBonds.length){allBonds=BONDS.slice(0,5);}
+  var bondRows='';
+  var remaining=bondAmt;
+  var shownBonds={};
+  allBonds.forEach(function(b){
+    if(shownBonds[b.name])return;
+    shownBonds[b.name]=true;
+    var bondPrice=b.price/100*b.nominal;
+    var lots=Math.floor(bondAmt/(bondPrice*allBonds.length));
+    if(lots<1)lots=1;
+    var spent=bondPrice*lots;
+    bondRows+='<tr>'
+      +'<td><div class="alloc-item-name">'+b.name+'</div><div class="alloc-item-sub">'+b.isin+'</div></td>'
+      +'<td><span class="alloc-badge-b">Облигация</span></td>'
+      +'<td><div class="alloc-amt">'+fm(Math.round(bondAmt/allBonds.length))+'₽</div></td>'
+      +'<td><div class="alloc-lots">'+lots+' лот × '+fm(bondPrice)+'₽</div></td>'
+      +'</tr>';
+  });
+  if(!bondRows)bondRows='<tr><td colspan="4" style="text-align:center;color:var(--t3);padding:12px;font-size:12px">Постройте лестницу для подбора облигаций</td></tr>';
+
+  var stockRows='';
+  STOCKS.forEach(function(s){
+    var perStock=stockAmt/STOCKS.length;
+    var shares=Math.floor(perStock/s.price);
+    if(shares<1)shares=1;
+    stockRows+='<tr>'
+      +'<td><div class="alloc-item-name">'+s.ticker+' — '+s.name+'</div><div class="alloc-item-sub">'+s.sector+'</div></td>'
+      +'<td><span class="alloc-badge-s">Акция</span></td>'
+      +'<td><div class="alloc-amt">'+fm(Math.round(perStock))+'₽</div></td>'
+      +'<td><div class="alloc-lots">'+shares+' шт × '+s.price.toLocaleString('ru-RU')+'₽</div></td>'
+      +'</tr>';
+  });
+
+  document.getElementById('alloc-result').innerHTML=
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px">'
+    +'<div>'
+    +'<div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:8px;display:flex;align-items:center;gap:6px">🏦 Облигации — <span style="font-family:IBM Plex Mono,monospace">'+fm(bondAmt)+'₽</span></div>'
+    +'<div style="overflow-x:auto;border-radius:var(--rs);border:1px solid var(--b1)">'
+    +'<table class="alloc-table"><thead><tr><th>Бумага</th><th>Тип</th><th>Сумма</th><th>Лоты</th></tr></thead><tbody>'+bondRows+'</tbody></table>'
+    +'</div></div>'
+    +'<div>'
+    +'<div style="font-size:12px;font-weight:700;color:var(--red);margin-bottom:8px;display:flex;align-items:center;gap:6px">📈 Акции — <span style="font-family:IBM Plex Mono,monospace">'+fm(stockAmt)+'₽</span></div>'
+    +'<div style="overflow-x:auto;border-radius:var(--rs);border:1px solid var(--b1)">'
+    +'<table class="alloc-table"><thead><tr><th>Бумага</th><th>Тип</th><th>Сумма</th><th>Акций</th></tr></thead><tbody>'+stockRows+'</tbody></table>'
+    +'</div></div>'
+    +'</div>'
+    +'<div style="margin-top:10px;padding:10px 12px;background:var(--s2);border-radius:var(--rs);font-size:12px;color:var(--t2);display:flex;gap:6px;align-items:center">'
+    +'<span>💡</span>'
+    +'<span>Ежемесячно: <b style="color:var(--blue)">'+fm(bondAmt)+'₽</b> в облигации ('+bp+'%) и <b style="color:var(--red)">'+fm(stockAmt)+'₽</b> в акции ('+sp+'%). За год: <b>'+fm(monthly*12)+'₽</b></span>'
+    +'</div>';
+}
+
+// ═══════════════════════════════════════════════
+// TABS & MISC
+// ═══════════════════════════════════════════════
+function switchTab(id,btn){
+  document.querySelectorAll('.tab-content').forEach(function(t){t.classList.remove('on');});
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('on');});
+  document.getElementById('tab-'+id).classList.add('on');
+  btn.classList.add('on');
+  if(id==='market')setTimeout(renderMarket,50);
+  if(id==='stocks')setTimeout(function(){STOCKS.forEach(function(s){var c=document.getElementById('canvas-'+s.ticker);if(c)drawStockChart(c,s);});},80);
+}
+function toggleMF(){var p=document.getElementById('mf-panel');p.classList.toggle('open');document.getElementById('mf-icon').textContent=p.classList.contains('open')?'⊖':'⊕';}
+function openSettings(){document.getElementById('settingsModal').classList.add('on');}
+function closeSettings(){document.getElementById('settingsModal').classList.remove('on');}
+function saveSettings(){G.invest=parseInt(document.getElementById('investAmount').value)||1000000;G.monthly=parseInt(document.getElementById('monthlyAmount').value)||50000;document.getElementById('inp-monthly').value=G.monthly;document.getElementById('st-invest').textContent=fm(G.invest);closeSettings();renderCF();renderScenarios();renderAllocation();}
+function resetLadder(){document.getElementById('sel-currency').value='RUB';document.getElementById('sel-len').value='3';document.getElementById('sel-spy').value='2';document.getElementById('sel-bps').value='1';document.getElementById('sel-horizon').value='3';document.getElementById('custom-horizon-row').style.display='none';var d=new Date();d.setMonth(d.getMonth()+1);document.getElementById('inp-date').value=d.toISOString().slice(0,10);buildLadder();}
+function resetFilters(){document.getElementById('sel-strategy').value='classic';document.getElementById('inp-dev').value='90';document.getElementById('sel-priority').value='credit';document.getElementById('sl-quality').value='5';document.getElementById('sv-quality').textContent='5';document.getElementById('sl-liq').value='40';document.getElementById('sv-liq').textContent='40';document.querySelectorAll('#cbg-rating input').forEach(function(c){c.checked=true;c.nextElementSibling.textContent='✓';});buildLadder();}
+function exportExcel(){
+  var steps=G.steps;if(!steps.length){alert('Сначала постройте лестницу');return;}
+  var csv='\uFEFF'+'Ступень;Целевая дата;Название;ISIN;Дата погашения;Доходность %;Купон %;Цена %;Рейтинг;Качество;Ликвидность;Доля %\n';
+  steps.forEach(function(st){var share=st.bonds.length?(100/st.bonds.length).toFixed(1):0;st.bonds.forEach(function(b){csv+=[st.step,fd(st.target),b.name,b.isin,fd(b.maturity),ytm(b).toFixed(2),b.coupon,b.price,b.rating,b.quality,b.liquidity,share].join(';')+'\n';});});
+  var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='bond-ladder.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+function saveLadder(){
+  var data=JSON.stringify({steps:G.steps,invest:G.invest,monthly:G.monthly,bondPct:G.bondPct,date:new Date().toISOString()},null,2);
+  var blob=new Blob([data],{type:'application/json'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='bond-ladder-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+</script>
+</body>
+</html>
